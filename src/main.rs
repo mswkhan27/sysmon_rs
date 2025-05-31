@@ -59,4 +59,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn render_cpu<B: ratatui::backend::Backend>(f: &mut Frame<B>, sys: &System, area: Rect) {
+    let cpu_usage = sys.global_cpu_info().cpu_usage();
+    let gauge = Gauge::default()
+        .block(Block::default().title("CPU Usage").borders(Borders::ALL))
+        .gauge_style(Style::default().fg(Color::Cyan))
+        .percent(cpu_usage as u16);
+    f.render_widget(gauge, area);
+}
 
+fn render_memory<B: ratatui::backend::Backend>(f: &mut Frame<B>, sys: &System, area: Rect) {
+    let total = sys.total_memory();
+    let used = sys.used_memory();
+    let percent = (used as f64 / total as f64 * 100.0) as u16;
+    let gauge = Gauge::default()
+        .block(Block::default().title("Memory Usage").borders(Borders::ALL))
+        .gauge_style(Style::default().fg(Color::Magenta))
+        .percent(percent);
+    f.render_widget(gauge, area);
+}
